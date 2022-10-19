@@ -11,15 +11,6 @@ import util
 from errors import *
 from reqeustor import Requestor
 
-# username = '3019234337'
-# passwd = 'lly947559'
-
-# username = '3021005190'
-# passwd = 'LHX486666lhx'
-
-username = '2020234407'
-passwd = 'Wzy413lib'
-
 ocr = ddddocr.DdddOcr()
 
 def login(s, username, passwd):
@@ -102,15 +93,15 @@ def parseCourses(html):
         # 课程相关
         courseLine = lineList[14].split(',')
         # classID
-        classID = re.findall("\\((\\w+)\\)", courseLine[4])[0]
+        classID = re.findall("\((\w+)\)", courseLine[4])[0]
         threePair = re.findall("\"([^\"]+)\",\"[^\"]*\",\"([^\"]*)\",\"([01]+)\"", arrangeItem)[0]
         location = threePair[1].strip()
         rawWeeks = threePair[2].strip()
         weekArray = []
         for i, b in enumerate(rawWeeks):
             if b == "1": weekArray.append(i)
-        twoPair = re.findall("([0-9]+)\\*unitCount\\+([0-9]+)", arrangeItem)
-        weekday = util.tryInt(twoPair[0][1]) + 1
+        twoPair = re.findall("([0-9]+)\*unitCount\+([0-9]+)", arrangeItem)
+        weekday = util.tryInt(twoPair[0][0]) + 1
         unitArray = list(map(lambda x : util.tryInt(x[1]) + 1, twoPair))
         arrangePairArray.append(
             (
@@ -212,7 +203,7 @@ def parseGPA(html, isMaster):
     s_courses = re.findall('<tr .+?\">([\s\S]+?)</tr>', tables[1])
     courses_data = []
     for c in s_courses:
-        vals = re.findall('<td[^>]*>\\s*([^<\\t\\n]*)', c)
+        vals = re.findall('<td[^>]*>\s*([^<\t\n]*)', c)
         data = {
             'semester': getAttr(vals, 'semester'),
             'code': getAttr(vals, 'code'),
@@ -320,31 +311,6 @@ def crawl(username, passwd):
     }
     return all
 
-# if __name__ == '__main__':
-#     try:
-#         rsession = requests.session()
-#         rsession.headers.update({
-#                 "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
-#                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-#                 "Accept-Language": "en-us",
-#                 "Connection": "keep-alive",
-#                 "Keep-Alive": "timeout=1, max=1000",
-#                 "Accept-Charset": "GB2312,utf-8;q=0.7,*;q=0.7",
-#             })
-
-#         session = Requestor(rsession)
-#         login(session, username, passwd)
-#         identity = getIdentity(session)
-#         gpa = crawlGPA(session)
-#         courses = crawlCourses(session, identity)
-#         exam = crawlExam(session, identity)
-
-#         all = {
-#             'gpa': gpa,
-#             'courses': courses,
-#             'exam': exam,
-#         }
-
-#     except Exception as e:
-#         log.error(e, backtrace=True)
-
+if __name__ == '__main__':
+    pass
+    # print(data['courses'])
