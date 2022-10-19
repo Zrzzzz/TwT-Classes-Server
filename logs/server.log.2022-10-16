@@ -1,0 +1,22 @@
+2022-10-16 17:05:54,300 - /Users/zrzz/Downloads/ocr_server/app.py[line:78] - ERROR: maximum recursion depth exceeded
+2022-10-16 17:05:57,183 - /Users/zrzz/Downloads/ocr_server/app.py[line:78] - ERROR: maximum recursion depth exceeded
+2022-10-16 17:06:54,506 - /Users/zrzz/Downloads/ocr_server/app.py[line:78] - ERROR: maximum recursion depth exceeded
+2022-10-16 17:07:51,131 - /Users/zrzz/Downloads/ocr_server/app.py[line:79] - ERROR: maximum recursion depth exceeded
+2022-10-16 17:07:56,878 - /Users/zrzz/Downloads/ocr_server/app.py[line:79] - ERROR: maximum recursion depth exceeded
+2022-10-16 17:10:35,626 - /Users/zrzz/Downloads/ocr_server/app.py[line:79] - ERROR: maximum recursion depth exceeded
+2022-10-16 17:12:03,746 - /Users/zrzz/Downloads/ocr_server/app.py[line:79] - ERROR: maximum recursion depth exceeded
+2022-10-16 17:12:13,466 - /Users/zrzz/Downloads/ocr_server/app.py[line:80] - ERROR: maximum recursion depth exceeded
+2022-10-16 17:13:46,168 - /Users/zrzz/Downloads/ocr_server/app.py[line:79] - ERROR: maximum recursion depth exceeded
+2022-10-16 17:14:34,591 - /Users/zrzz/Downloads/ocr_server/app.py[line:79] - ERROR: maximum recursion depth exceeded
+2022-10-16 17:14:35,269 - /Users/zrzz/Downloads/ocr_server/app.py[line:79] - ERROR: maximum recursion depth exceeded
+2022-10-16 17:15:23,355 - /Users/zrzz/Downloads/ocr_server/app.py[line:79] - ERROR: maximum recursion depth exceeded
+2022-10-16 17:16:47,356 - /Users/zrzz/Downloads/ocr_server/app.py[line:81] - ERROR: Invalid URL 'www.baidu.com': No scheme supplied. Perhaps you meant http://www.baidu.com?
+2022-10-16 17:17:03,725 - /Users/zrzz/Downloads/ocr_server/app.py[line:81] - ERROR: maximum recursion depth exceeded
+2022-10-16 17:20:06,266 - /Users/zrzz/Downloads/ocr_server/app.py[line:81] - ERROR: maximum recursion depth exceeded
+2022-10-16 17:52:40,715 - /Users/zrzz/Downloads/ocr_server/app.py[line:81] - ERROR: maximum recursion depth exceeded while calling a Python object
+2022-10-16 18:02:19,100 - /Users/zrzz/Downloads/ocr_server/app.py[line:81] - ERROR: maximum recursion depth exceeded while calling a Python object
+2022-10-16 18:02:43,324 - /Users/zrzz/Downloads/ocr_server/app.py[line:81] - ERROR: maximum recursion depth exceeded while calling a Python object
+2022-10-16 18:07:27,807 - /Users/zrzz/Downloads/ocr_server/app.py[line:81] - ERROR: maximum recursion depth exceeded while calling a Python object
+2022-10-16 18:12:25,348 - /Users/zrzz/Downloads/ocr_server/app.py[line:96] - ERROR: [Errno 48] Address already in use: ('127.0.0.1', 8282)
+2022-10-16 20:10:19,345 - /Users/zrzz/Downloads/ocr_server/app.py[line:77] - ERROR: maximum recursion depth exceeded
+2022-10-16 20:10:20,572 - /Users/zrzz/Downloads/ocr_server/app.py[line:77] - ERROR: maximum recursion depth exceeded

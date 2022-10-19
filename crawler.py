@@ -11,6 +11,15 @@ import util
 from errors import *
 from reqeustor import Requestor
 
+# username = '3019234337'
+# passwd = 'lly947559'
+
+# username = '3021005190'
+# passwd = 'LHX486666lhx'
+
+username = '2020234407'
+passwd = 'Wzy413lib'
+
 ocr = ddddocr.DdddOcr()
 
 def login(s, username, passwd):
@@ -50,7 +59,7 @@ def crawlCourses(s, identity):
     majorCourses = getDetailTable(s, identity, False)
     if hasMinor:
         minorCourses = getDetailTable(s, identity, True)
-    
+
     return {
         'major': majorCourses,
         'minor': minorCourses,
@@ -79,7 +88,7 @@ def getDetailTable(s, identity, getMinor):
     try:
         return parseCourses(ret)
     except IndexError:
-        raise HtmlParseError()  
+        raise HtmlParseError()
 
 def parseCourses(html):
     arrangePairArray = []
@@ -107,15 +116,15 @@ def parseCourses(html):
             (
                 classID,
                 {
-                    'teacherArray': teacherArray,
-                    'weekArray': weekArray,
-                    'unitArray': unitArray,
+                    'teacherList': teacherArray,
+                    'weekList': weekArray,
+                    'unitList': unitArray,
                     'weekday': weekday,
                     'location': location,
                 }
             )
         )
-    trs = re.findall('<tr([\s\S]+?)</tr>', re.findall('<tbody([\s\S]+?)</tbody>', html)[0])       
+    trs = re.findall('<tr([\s\S]+?)</tr>', re.findall('<tbody([\s\S]+?)</tbody>', html)[0])
     for tr in trs:
         tds = re.findall('<td>([\s\S]+?)</td>', tr)
         if len(tds) <= 9: continue
@@ -125,21 +134,23 @@ def parseCourses(html):
         if 'style' in tds[3]:
             name = re.findall('(.+?)<sup', tds[3])[0].strip()+' '+re.findall('\">(.+?)</s', tds[3])[0].strip()
         credit = util.tryFloat(tds[4])
-        teachers = tds[5]
+        teachers = tds[5].split(',')
         weeks = tds[6].strip()
         campus = ''
         if re.findall('(.+?校区)',tds[9]):
             campus = re.findall('(.+?校区)',tds[9])[0].strip()
         courseData = {
-            "serial": serial,
-            "no": no,
+            "classId": serial,
+            "courseId": no,
             "name": name,
-            "credit": credit,
-            "teachers": teachers,
+            "credit": str(credit),
+            "teacherList": teachers,
             "weeks": weeks,
             "campus": campus,
         }
-        courseData["arranges"] = list(filter(lambda x : x[0] == serial, arrangePairArray))
+        courseData["arrangeList"] = list(
+            map(lambda x: x[1], filter(lambda x: x[0] == serial, arrangePairArray))
+        )
         courses.append(courseData)
     return courses
 
@@ -153,23 +164,23 @@ def crawlGPA(s):
     except IndexError:
         raise HtmlParseError()
 
-    
+
 def parseGPA(html, isMaster):
     total = re.findall(('汇总' if isMaster else '总计') + '</th>([\s\S]+?)</tr', html)
     if total:
         s_total = re.findall('<th>(.+?)</th>', total[0])
     total_data = {}
 
-    if len(s_total) == 4:    
+    if len(s_total) == 4:
         total_data['count'] = s_total[0]
-        total_data['total_gpa'] = util.tryFloat(s_total[1])
-        total_data['avg_gpa'] = util.tryFloat(s_total[2])
-        total_data['avg_score'] = util.tryFloat(s_total[3])
+        total_data['credits'] = util.tryFloat(s_total[1])
+        total_data['gpa'] = util.tryFloat(s_total[2])
+        total_data['weighted'] = util.tryFloat(s_total[3])
     elif len(s_total) == 2:
         total_data['count'] = s_total[0]
-        total_data['total_gpa'] = util.tryFloat(s_total[1])
-        total_data['avg_gpa'] = 0.0
-        total_data['avg_score'] = 0.0
+        total_data['credits'] = util.tryFloat(s_total[1])
+        total_data['gpa'] = 0.0
+        total_data['weighted'] = 0.0
 
     tables = re.findall('class=\"gridtable\">([\s\S]+?)</table>', html)
     grid_head = re.findall('gridhead([\s\S]+?)</thead>', tables[1])
@@ -207,11 +218,11 @@ def parseGPA(html, isMaster):
             'code': getAttr(vals, 'code'),
             'no': getAttr(vals, 'no'),
             'type': getAttr(vals, 'type'),
-            'classProperty': getAttr(vals, 'classProperty'),
+            'classType': getAttr(vals, 'classProperty'),
             'name': getAttr(vals, 'name'),
             'credit': util.tryFloat(getAttr(vals, 'credit')),
             'score': util.tryFloat(getAttr(vals, 'score')),
-            'scoreStr': getAttr(vals, 'score'),
+            'rawScore': getAttr(vals, 'score'),
             'gpa': util.tryFloat(getAttr(vals, 'gpa')),
         }
         courses_data.append(data)
@@ -232,7 +243,7 @@ def crawlExam(s, identity):
     try:
         return parseExam(ret)
     except IndexError:
-        raise HtmlParseError()  
+        raise HtmlParseError()
 
 
 def parseExam(html):
@@ -247,7 +258,7 @@ def parseExam(html):
                         arr))
         ext = "" if arr[8] == '正常' else arr[9]
         exams.append({
-            'id': arr[0], 
+            'id': arr[0],
             'name': arr[1],
             'type': arr[2],
             'date': arr[3],
@@ -305,7 +316,35 @@ def crawl(username, passwd):
     all = {
         'gpa': gpa,
         'courses': courses,
-        'exam': exam,
+        'exams': exam,
     }
     return all
+
+# if __name__ == '__main__':
+#     try:
+#         rsession = requests.session()
+#         rsession.headers.update({
+#                 "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
+#                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+#                 "Accept-Language": "en-us",
+#                 "Connection": "keep-alive",
+#                 "Keep-Alive": "timeout=1, max=1000",
+#                 "Accept-Charset": "GB2312,utf-8;q=0.7,*;q=0.7",
+#             })
+
+#         session = Requestor(rsession)
+#         login(session, username, passwd)
+#         identity = getIdentity(session)
+#         gpa = crawlGPA(session)
+#         courses = crawlCourses(session, identity)
+#         exam = crawlExam(session, identity)
+
+#         all = {
+#             'gpa': gpa,
+#             'courses': courses,
+#             'exam': exam,
+#         }
+
+#     except Exception as e:
+#         log.error(e, backtrace=True)
 
