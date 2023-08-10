@@ -8,7 +8,9 @@ RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list &
     sed -i s@/security.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list && \
     apt-get clean && \
     apt-get update && \
-    apt-get install --no-install-suggests --no-install-recommends --yes gcc
+    apt-get install --no-install-suggests --no-install-recommends --yes gcc curl
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+RUN apt-get install -y nodejs
 WORKDIR /app
 COPY requirements.txt /app/requirements.txt
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple/ && \
