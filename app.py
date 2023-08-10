@@ -7,6 +7,7 @@ import ddddocr
 from flask import Flask, request
 from gevent import monkey, pywsgi
 from loguru import logger
+from loginjs import ctx
 
 import crawler
 
@@ -72,6 +73,17 @@ def getClasses():
     passwd = request.form.get('passwd')
     try:
         res = crawler.crawl(username, passwd)
+        return {'code': 200, 'data': res}
+    except Exception as e:
+        log.logger.error(e)
+        logger.error(e, backtrace=True)
+        return {'code': 201, 'data': str(e)}
+
+@app.route('/enc', methods=["POST"])
+def enc():
+    val = request.form.get('val')
+    try:
+        res = ctx.call('strEnc', val, '1', '2', '3')
         return {'code': 200, 'data': res}
     except Exception as e:
         log.logger.error(e)
