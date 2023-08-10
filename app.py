@@ -8,7 +8,7 @@ from flask import Flask, request
 from gevent import monkey, pywsgi
 from loguru import logger
 from loginjs import ctx
-
+from errors import *
 import crawler
 
 monkey.patch_all(ssl=False)
@@ -76,7 +76,6 @@ def getClasses():
         return {'code': 200, 'data': res}
     except Exception as e:
         log.logger.error(e)
-        logger.error(e, backtrace=True)
         return {'code': 201, 'data': str(e)}
 
 @app.route('/enc', methods=["POST"])
@@ -87,7 +86,6 @@ def enc():
         return {'code': 200, 'data': res}
     except Exception as e:
         log.logger.error(e)
-        logger.error(e, backtrace=True)
         return {'code': 201, 'data': str(e)}
 
 
