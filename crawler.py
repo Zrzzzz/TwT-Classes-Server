@@ -10,6 +10,7 @@ from requests_toolbelt.utils import dump
 import util
 from errors import *
 from reqeustor import Requestor
+from loginjs import ctx
 
 ocr = ddddocr.DdddOcr()
 
@@ -23,19 +24,26 @@ def login(s, username, passwd):
         s_exec = re.findall("name=\"execution\" value=\"(.+?)\"",html)[0]
     except:
         raise HtmlParseError()
+
+    try:
+        lt = re.findall("name=\"lt\" value=\"(.+?)\"",html)[0]
+    except:
+        raise HtmlParseError()
     # 验证码
-    captcha = s.get('https://sso.tju.edu.cn/cas/images/kaptcha.jpg?id=')
+    captcha = s.get('https://sso.tju.edu.cn/cas/code')
     s_captcha = ocr.classification(captcha.content)
     # 进行登录
     data = {
-        'username': username,
-        'password': passwd,
-        'captcha': s_captcha,
+        'rsa': ctx.call('strEnc', username+passwd+lt, '1', '2', '3'),
+        'ul': len(username),
+        'pl': len(passwd),
+        'lt': lt,
+        'code': s_captcha,
         'execution': s_exec,
         '_eventId': 'submit',
     }
     ret = s.post("https://sso.tju.edu.cn/cas/login", data=data).text
-    if re.findall(r'Log In Successful', ret):
+    if re.findall(r'Log In Successful', ret) or re.findall(r'您录入的密码属于弱密码，请及时修改', ret):
         # 加载cookie
         ret = s.get('http://classes.tju.edu.cn/eams/homeExt.action')
     else:
@@ -59,9 +67,9 @@ def crawlCourses(s, identity):
 def getDetailTable(s, identity, getMinor):
     isMaster = identity['isMaster']
     semesterId = identity['semesterId']
-    projectId = 2 if getMinor else 1
     ret = ''
     if not isMaster:
+        projectId = 2 if getMinor else 1
         s.get(f'http://classes.tju.edu.cn/eams/courseTableForStd!index.action?projectId={projectId}')
         time.sleep(0.1)
         ret = s.get(f'http://classes.tju.edu.cn/eams/courseTableForStd!innerIndex.action?projectId={projectId}').text
@@ -145,9 +153,8 @@ def parseCourses(html):
         courses.append(courseData)
     return courses
 
-def crawlGPA(s):
-    ret = s.post('http://classes.tju.edu.cn/eams/dataQuery.action', data={'entityId': ''}).text
-    isMaster = "研究" in ret
+def crawlGPA(s, identity):
+    isMaster = identity['isMaster']
     s.get('http://classes.tju.edu.cn/eams/courseTableForStd!index.action', params={'projectId': '22' if isMaster else '1'})
     ret = s.get('http://classes.tju.edu.cn/eams/teach/grade/course/person!historyCourseGrade.action?projectType=MAJOR')
     try:
@@ -300,7 +307,7 @@ def crawl(username, passwd):
     session = Requestor(rsession)
     login(session, username, passwd)
     identity = getIdentity(session)
-    gpa = crawlGPA(session)
+    gpa = crawlGPA(session, identity)
     courses = crawlCourses(session, identity)
     exam = crawlExam(session, identity)
 
@@ -312,5 +319,7 @@ def crawl(username, passwd):
     return all
 
 if __name__ == '__main__':
-    pass
-    # print(data['courses'])
+
+
+
+    ...

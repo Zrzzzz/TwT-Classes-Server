@@ -10,7 +10,7 @@ from loguru import logger
 
 import crawler
 
-monkey.patch_all()
+monkey.patch_all(ssl=False)
 
 class Logger(object):
     level_relations = {
@@ -49,7 +49,7 @@ log = Logger('logs/server.log',level='debug')
 
 @app.route('/')
 def hello():
-    return 'hello, world'
+    return 'hello'
 
 @app.route('/ocr', methods=["POST"])
 def ocrHandler():
@@ -86,9 +86,12 @@ if __name__ == '__main__':
         '%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s - %(lineno)s - %(message)s')
     handler.setFormatter(logging_format)
     app.logger.addHandler(handler)
-    try:
-        server = pywsgi.WSGIServer(('127.0.0.1', 8282), app)
-        server.serve_forever()
-    except Exception as e:
-        log.logger.error(e)
+    if os.getenv("DEBUG"):
+        app.run(host='127.0.0.1', port= 8282, debug=True)
+    else:
+        try:
+            server = pywsgi.WSGIServer(('127.0.0.1', 8282), app)
+            server.serve_forever()
+        except Exception as e:
+            log.logger.error(e)
 
